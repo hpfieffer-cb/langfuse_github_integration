@@ -1,0 +1,20 @@
+name: Langfuse CI
+
+on:
+  repository_dispatch:
+    types: [langfuse-prompt-update]
+
+jobs:
+  log:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump full payload
+        run: |
+          echo '${{ toJson(github.event.client_payload) }}'
+
+      - name: Try common fields
+        run: |
+          echo "Detected prompt change"
+          echo "Prompt: ${{ github.event.client_payload.prompt.name }}"
+          echo "Version: ${{ github.event.client_payload.prompt.version }}"
+
