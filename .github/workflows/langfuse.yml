@@ -22,8 +22,8 @@ jobs:
           echo "Version: ${{ github.event.client_payload.prompt.version }}"
           echo "Labels: ${{ join(github.event.client_payload.prompt.labels, ', ') }}"
 
-      - name: Commit prompt changes (production only)
-        if: contains(github.event.client_payload.prompt.labels, 'prod' || 'nonprod')
+      - name: Commit prompt changes (prod and nonprod)
+        if: contains(github.event.client_payload.prompt.labels, 'prod') || contains(github.event.client_payload.prompt.labels, 'nonprod')
         run: |
           # Configure git user
           git config --local user.email "action@github.com"
