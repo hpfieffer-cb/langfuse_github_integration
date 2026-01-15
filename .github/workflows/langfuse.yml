@@ -11,6 +11,9 @@ jobs:
   log:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Dump full payload
         run: |
           echo '${{ toJson(github.event.client_payload) }}'
@@ -20,11 +23,25 @@ jobs:
           echo "Detected prompt change"
           echo "Prompt: ${{ github.event.client_payload.prompt.name }}"
           echo "Version: ${{ github.event.client_payload.prompt.version }}"
-      - name: Debug dispatch identity
+          echo "Labels: ${{ join(github.event.client_payload.prompt.labels, ', ') }}"
+
+      - name: Commit prompt changes (production only)
+        if: contains(github.event.client_payload.prompt.labels, 'production')
         run: |
-          echo "run_id: ${{ github.run_id }}"
-          echo "run_number: ${{ github.run_number }}"
-          echo "action: ${{ github.event.action }}"
-          echo "sender: ${{ github.event.sender.login }}"
-          echo "payload: ${{ toJson(github.event.client_payload) }}"
+          # Configure git user
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+          # Create or update prompt files based on webhook data
+          mkdir -p prompt-updates
+          echo "Updated prompt: ${{ github.event.client_payload.prompt.name }}" >> prompt-updates/PROMPT_UPDATES.md
+          echo "Version: ${{ github.event.client_payload.prompt.version }}" >> prompt-updates/PROMPT_UPDATES.md
+          echo "Timestamp: ${{ github.event.client_payload.timestamp }}" >> prompt-updates/PROMPT_UPDATES.md
+          echo "Labels: ${{ join(github.event.client_payload.prompt.labels, ', ') }}" >> prompt-updates/PROMPT_UPDATES.md
+          echo "---" >> prompt-updates/PROMPT_UPDATES.md
+          
+          # Add and commit changes
+          git add prompt-updates/
+          git commit -m "chore: update production prompt - ${{ github.event.client_payload.prompt.name }} v${{ github.event.client_payload.prompt.version }}" || echo "No changes to commit"
+          git push
 
