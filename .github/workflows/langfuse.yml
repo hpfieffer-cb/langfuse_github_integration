@@ -3,9 +3,6 @@ name: Langfuse CI
 on:
   repository_dispatch:
     types: [langfuse-prompt-update]
-concurrency:
-  group: 'langfuse-prompt-update'
-  cancel-in-progress: true
 
 jobs:
   log:
