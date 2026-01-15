@@ -20,4 +20,11 @@ jobs:
           echo "Detected prompt change"
           echo "Prompt: ${{ github.event.client_payload.prompt.name }}"
           echo "Version: ${{ github.event.client_payload.prompt.version }}"
+      - name: Debug dispatch identity
+        run: |
+          echo "run_id: ${{ github.run_id }}"
+          echo "run_number: ${{ github.run_number }}"
+          echo "action: ${{ github.event.action }}"
+          echo "sender: ${{ github.event.sender.login }}"
+          echo "payload: ${{ toJson(github.event.client_payload) }}"
 
