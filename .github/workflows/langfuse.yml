@@ -10,7 +10,7 @@ jobs:
     steps:
       - name: Dump full payload
         run: |
-          echo '${{ toJson(github.event.client_payload) }}'
+          echo '${{ toJson(github.event) }}'
 
       - name: Try common fields
         run: |
